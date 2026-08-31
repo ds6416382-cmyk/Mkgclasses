@@ -3,92 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard</title>
+<title>Student Dashboard | MKG Coaching Classes</title>
 <link rel="stylesheet" href="Style.css">
-
 <style>
-body{
-font-family:Poppins,sans-serif;
-background:#f5f5f5;
-margin:0;
-padding:20px;
-}
-
-.box{
-max-width:700px;
-margin:auto;
-background:white;
-padding:25px;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,.2);
-}
-
-h1{
-text-align:center;
-color:#0b3d91;
-}
-
-.menu{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:15px;
-margin-top:25px;
-}
-
-.menu a{
-text-decoration:none;
-background:#0b3d91;
-color:white;
-padding:15px;
-text-align:center;
-border-radius:10px;
-font-weight:bold;
-}
+body{font-family:Poppins,sans-serif;background:#f5f7fb;margin:0;padding:20px;}
+h1{text-align:center;color:#0b3d91;margin:20px 0;}
+.card{max-width:600px;margin:20px auto;background:white;padding:25px;border-radius:15px;box-shadow:0 5px 15px rgba(0,0,0,.12);text-align:center;}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:15px;max-width:600px;margin:20px auto;}
+.menu a{ background:white; padding:20px; border-radius:12px; text-align:center; text-decoration:none; color:#0b3d91; font-weight:bold; box-shadow:0 5px 15px rgba(0,0,0,.12); }
+.menu a:hover{background:#0b3d91;color:white;}
+.logout{display:block;width:max-content;margin:30px auto;padding:12px 25px;background:#dc3545;color:white;text-decoration:none;border-radius:8px;font-weight:bold;}
 </style>
-
 </head>
-
 <body>
 
-<div class="box">
+<h1>🎓 Student Dashboard</h1>
 
-<h1>🎓 Welcome Student</h1>
+<div class="card">
+<h2 id="sName">👤 Student Name</h2>
+<p><b>Student ID:</b> <span id="sId">MKG001</span></p>
+<p><b>Class:</b> <span id="sClass">Loading...</span></p>
+<p><b>Email:</b> <span id="sEmail">Loading...</span></p>
+</div>
 
 <div class="menu">
-
-<a href="notice.html">📢 Notice</a>
-
-<a href="notes.html">📚 Notes</a>
-
-<a href="result.html">🏆 Result</a>
-
-<a href="profile.html">👤 My Profile</a>
-
-<a href="attendance.html">📅 Attendance</a>
-
-<a href="fees.html">💳 Fees</a>
-
-<a href="test.html">📝 Online Test</a>
-
-<a href="index.html">🏠 Home</a>
-
-<a href="#" id="logoutBtn">🚪 Logout</a>
-
+<a href="notes.html">📚 PDF Notes<br><small>और Video</small></a>
+<a href="courses.html">📖 Courses</a>
+<a href="gallery.html">🖼️ Gallery</a>
+<a href="contact.html">📞 Contact Us</a>
 </div>
+
+<a href="#" id="logoutBtn" class="logout">🚪 Logout</a>
+<a href="index.html" style="display:block;text-align:center;margin-top:15px;color:#0b3d91;">🏠 Home</a>
+
 <script type="module">
-import { app } from "./firebase.js";
-import {
-getAuth,
-signOut
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { auth, db } from "./firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-const auth = getAuth(app);
+const sName = document.getElementById("sName");
+const sClass = document.getElementById("sClass");
+const sEmail = document.getElementById("sEmail");
+const sId = document.getElementById("sId");
 
-document.getElementById("logoutBtn").onclick = () => {
-signOut(auth).then(() => {
-alert("Logout Successful");
-window.location.href = "student-login.html";
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    window.location.href="login.html";
+    return;
+  }
+  sEmail.innerText = user.email;
+  try{
+    const snap = await getDoc(doc(db, "students", user.uid));
+    if(snap.exists()){
+      const data = snap.data();
+      sName.innerText = "👤 " + (data.name || "Student");
+      sClass.innerText = data.class || data.className || localStorage.getItem("studentClass") || "N/A";
+      sId.innerText = data.studentId || user.uid.slice(0,6).toUpperCase();
+      
+      // अगर Rejected है तो Notes मत दिखाओ
+      if((data.status||"").toLowerCase() === "rejected"){
+        alert("❌ आपका Account Rejected है। Admin से संपर्क करो।");
+      }
+    }
+  } catch(e){ console.log(e); }
 });
+
+document.getElementById("logoutBtn").onclick = async (e)=>{
+  e.preventDefault();
+  await signOut(auth);
+  localStorage.clear();
+  window.location.href="login.html";
 };
 </script>
 </body>
