@@ -1,29 +1,24 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard</title>
-<style>
-body{font-family:Arial;background:#f2f5f9;margin:0;padding:20px;}
-h1{text-align:center;color:#0b3d91;}
-.card{max-width:500px;margin:20px auto;background:white;padding:25px;border-radius:18px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.12);}
-.btn{display:block;max-width:500px;margin:25px auto;background:#0b3d91;color:white;text-align:center;padding:20px;border-radius:14px;text-decoration:none;font-size:20px;font-weight:bold;}
-.logout{display:block;width:max-content;margin:20px auto;padding:12px 28px;background:#dc3545;color:white;text-decoration:none;border-radius:10px;}
-</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Dashboard | MKG Coaching Classes</title>
+
+<link rel="stylesheet" href="Style.css">
 </head>
+
 <body>
-<h1>🎓 Student Dashboard</h1>
-<div class="card">
-<h2 id="sName">👤 Student</h2>
-<p><b>ID:</b> <span id="sId">-</span> | <b>Class:</b> <span id="sClass">-</span></p>
+
+<h1 style="text-align:center;margin-top:40px;">
+🎓 Student Dashboard
+</h1>
+
+<div class="card" style="max-width:500px;margin:30px auto;text-align:center;">
+<h2>👤 Student Name</h2>
+<p><b>Name:</b> Student</p>
+<p><b>Student ID:</b> MKG001</p>
+<p><b>Class:</b> 10th</p>
 </div>
-<a href="courses.html" class="btn">📚 Courses</a>
-<a href="#" id="logoutBtn" class="logout">🚪 Logout</a>
-<script>
-const s=JSON.parse(localStorage.getItem("mkgStudentSession")||"null");
-if(!s) location.href="login.html";
-else{document.getElementById("sName").innerText="👤 "+s.studentName;document.getElementById("sId").innerText=s.studentId;document.getElementById("sClass").innerText=s.studentClass;}
-document.getElementById("logoutBtn").onclick=(e)=>{e.preventDefault();localStorage.removeItem("mkgStudentSession");location.href="login.html";}
-</script>
 </body>
 </html>
